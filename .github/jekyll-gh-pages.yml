@@ -1,0 +1,31 @@
+name: Deploy Sphinx documentation to Pages
+
+on:
+  push:
+    branches: [main] # branch to trigger deployment
+
+jobs:
+  pages:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    permissions:
+      pages: write
+      id-token: write
+    steps:
+    
+    - name: test
+      uses: actions/checkout@v4
+      with:
+        submodules: true
+    - name: Pull & update submodules recursively
+      run: |
+        git submodule init
+        git submodule update
+    - id: deployment
+      uses: sphinx-notes/pages@3.2
+      with:
+        checkout: false 
+        documentation_path: docs/source
+        requirements_path: docs/source/requirements.txt
