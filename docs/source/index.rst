@@ -11,3 +11,4 @@ ONIKA Documentation
    :caption: ONIKA Framework
 
    project_onika/Introduction.rst
+   project_onika/Installation.rst
