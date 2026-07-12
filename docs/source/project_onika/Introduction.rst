@@ -1,22 +1,35 @@
-ExaNBody: Framework for N-Body Simulations on HPC Platforms
-===========================================================
+Onika: a Component-Based HPC Platform for Numerical Simulation
+================================================================
 
-This framework, developed at the French Atomic Agency (CEA), is tailored for N-Body simulations on High-Performance Computing (HPC) platforms. Originally designed for the ExaSTAMP Molecular Dynamics code, it has been extended to cater to various N-Body problems.
+**Onika** (Object Network Interface for Knit Applications) is a component-based HPC software platform for building numerical simulation codes.
 
-Key Characteristics:
+Onika is the foundation of the exaNBody particle simulation platform, but it is not tied to N-Body problems, nor to any other specific application domain. Existing applications built on Onika's components include Molecular Dynamics, particle-based fluid simulations using methods such as Smoothed Particle Hydrodynamics (SPH), and rigid body simulations using methods such as the Discrete Element Method (DEM).
 
-* **Language:** Implemented in C++17, leveraging modern language features for efficiency and versatility.
+See :doc:`Motivation` for why Onika is built around a component-based architecture.
 
-* **Parallelization:**: Hybrid approach integrating:
-	* Vectorization for CPU optimization.
-	* Thread-parallelization using OpenMP for multi-core architectures.
-	* GPU-parallelization via CUDA to harness GPU computational power.
-	* MPI-parallelization for distributed memory systems.
-  
-* **Spatial Domain Decomposition:** Utilizes spatial domain decomposition techniques for efficient workload distribution among processors.
+Key Characteristics
+-------------------
 
-* **Load Balancing (RCB):** Implements Load Balancing using Recursive Coordinate Bisection (RCB) for optimal task distribution among processing units.
+* **Language:** Implemented in C++20.
+* **Build system:** CMake.
+* **Configuration:** YAML for user input files.
+* **Parallelization:** MPI and OpenMP for distributed and shared-memory parallelism.
+* **GPU acceleration:** CUDA and HIP.
 
-* **Parallel IO:** Enables efficient handling of parallel Input/Output operations. Supports checkpoint files, parallel Paraview files, and diagnostics in a parallelized manner.
+Onika in other codes
+--------------------
 
-* **In-situ Analysis:** Provides real-time data analysis capabilities during simulation execution, minimizing data movement and storage overhead.
+Onika is used in production by several codes:
+
+* `ExaNBody <https://github.com/Collab4exaNBody/exaNBody>`_, for N-Body simulations (open source) :cite:`Carrard_2024`.
+* `ExaStamp <https://github.com/Collab4exaNBody/exaStamp>`_, for Molecular Dynamics simulations (open source) :cite:`cieren2014exastamp`.
+* `ExaDEM <https://github.com/Collab4exaNBody/exaDEM>`_, for Discrete Element Method simulations (open source) :cite:`prat2025exadem`. ExaDEM combines exaNBody for its HPC performance layer with the physical modeling capabilities of `Rockable <https://github.com/richefeu/rockable>`_ :cite:`richefeu2025rockable`, notably its R-shape particle representation.
+* `HippoLBM <https://github.com/Collab4exaNBody/hippoLBM>`_, for Lattice Boltzmann Method simulations (open source). HippoLBM reuses computational kernels from an earlier code, DEMLBM3D, integrated into Onika operators, with data structures reworked for GPU execution and a domain decomposition algorithm added to support MPI+GPU parallelism.
+* ExaSPH, for Smoothed Particle Hydrodynamics simulations (not open source) and Coupling ExaSPH with EuroPlexus via onika (not open source) :cite:`beccantini2022europlexus`.
+* ExaCoLD, for LBM-DEM-IBM coupling (soon to be open source).
+* A prototype of CEA's PLEIADES-HPC platform (not open source) :cite:`bernaud2024pleiades`.
+
+.. rubric:: References
+
+.. bibliography::
+   :filter: docname in docnames
