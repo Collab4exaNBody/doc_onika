@@ -41,6 +41,7 @@ Among all these options, a few are especially useful on a daily basis:
 - ``--profiling-exectime``: prints the execution time of each operator call. This is handy while debugging, to identify the last operator that was actually executed.
 - ``--profiling-summary``: prints a timetable at the end of the run. This is extremely useful for performance studies.
 - ``--nogpu``: disables GPU execution. This is also handy while debugging, to rule out GPU-related issues.
+- ``--omp_num_threads``: sets the number of OpenMP threads used to run the simulation. Otherwise, Onika uses all available threads, which can sometimes be counter-productive.
 
 Options are grouped by prefix, each corresponding to a functional area of the framework, as described below.
 
@@ -80,9 +81,66 @@ Profiling options
 
    Enable execution time profiling of operators.
 
+   Example of output:
+
+   .. code-block:: text
+
+      performance_adviser 8.942483 ms
+      move_particles 17.696789 ms
+      extend_domain 5.954799 ms
+      dem_cost_model 8.979482 ms
+      load_balance_rcb 0.028671 ms
+      migrate_cell_particles_interaction 66.011119 ms
+      rebuild_amr 9.830725 ms
+      backup_r 7.87085 ms
+      ghost_comm_scheme 9.9665 ms
+      ghost_update_all 9.992637 ms
+      update_traversals 0.07399 ms
+      driver_vertices 0.052942 ms
+      grid_memory_compact 0.338624 ms
+      grid_rshape_driver 0.063717 ms
+      amr_grid_pairs 0.352577 ms
+      chunk_neighbors_contact 6.024487 ms
+      nbh_sphere 1.231113 ms
+      update_interaction_ghost 0.319365 ms
+      classify_interactions 8.79815 ms
+      reset_force_moment 0.115968 ms
+      gravity_force 3.085349 ms
+      contact_sphere 44.643479 ms
+
 .. option:: --profiling-summary <bool> (default: false)
 
    Print a profiling summary at the end of the run.
+
+   Example of output:
+
+   .. code-block:: text
+
+      Profiling .........................................  tot. time  ( GPU )   avginb  maxinb     count  percent
+      sim ...............................................  3.682e+03            0.000   0.000         1  100.00%
+      ...
+                    update_particle_neighbors ...........  9.497e+01            0.000   0.000        60   2.58% /  2.61%
+                      amr_grid_pairs ....................  8.678e-01            0.000   0.000        60   0.02% /  0.02%
+                      chunk_neighbors_impl ..............  9.390e+01            0.000   0.000        60   2.55% /  2.58%
+                        chunk_neighbors_contact .........  6.881e+01            0.000   0.000        60   1.87% /  1.89%
+                        nbh_sphere ......................  1.666e+01            0.000   0.000        60   0.45% /  0.46%
+                        update_interaction_ghost ........  1.383e+00            0.000   0.000        60   0.04% /  0.04%
+                        classify_interactions ...........  6.773e+00            0.000   0.000        60   0.18% /  0.19%
+              update_particles_fast .....................  2.554e+02            0.000   0.000     19940   6.94% /  7.02%
+                update_particles_fast_body ..............  2.415e+02            0.000   0.000     19940   6.56% /  6.64%
+                  ghost_update_rq .......................  2.144e+02            0.000   0.000     19940   5.82% /  5.89%
+                  driver_vertices .......................  6.493e+00            0.000   0.000     19940   0.18% /  0.18%
+              lb_event_counter ..........................  9.252e+00            0.000   0.000     20000   0.25% /  0.25%
+            reset_force_driver ..........................  7.161e+00            0.000   0.000     20000   0.19% /  0.20%
+            reset_force_moment ..........................  8.267e+01            0.000   0.000     20000   2.25% /  2.27%
+            compute_force ...............................  1.601e+03            0.000   0.000     20000  43.49% / 44.02%
+              gravity_force .............................  5.797e+01            0.000   0.000     20000   1.57% /  1.59%
+              contact_sphere ............................  1.519e+03            0.000   0.000     20000  41.26% / 41.76%
+            update_stress_tensor ........................  1.115e+00            0.000   0.000        20   0.03% /  0.03%
+              compute_stress_tensor .....................  1.069e+00            0.000   0.000        20   0.03% /  0.03%
+      ....
+        finalize_cuda
+      ==================================
 
 .. option:: --profiling-filter <StringVector> (default: {})
 
@@ -157,6 +215,51 @@ Development and troubleshooting options.
 .. option:: --debug-graph <bool> (default: false)
 
    Print the operator execution graph.
+
+   Example of output:
+
+   .. code-block:: text
+
+      ======= simulation graph ========
+      sim
+        message
+        hw_device_init
+          mpi_comm_world
+          init_cuda
+        global
+        update_ghost_config
+        io_config
+        drivers
+          init_drivers
+          register_cylinder
+          backup_drivers
+          driver_vertices
+        domain
+        grid_flavor_dem
+        particle_regions
+        input_data
+          init_rcb_grid
+          particle_type
+          lattice
+          set_fields
+        check_homothety
+        init_rcut_max
+          dem_rcut_max
+          nbh_dist
+          check_rcut
+        grid_memory_compact
+        print_domain
+        print_drivers
+        driver_extractor_summary
+        performance_adviser
+        first_iteration
+          init_particles
+            move_particles
+            extend_domain
+            load_balance
+              dem_cost_model
+              load_balance_rcb
+            migrate_particles
 
 .. option:: --debug-ompt <bool> (default: false)
 
@@ -273,6 +376,14 @@ General options
 
    Disable GPU execution, even if a GPU is available.
 
+   To verify that the option is correctly taken into account, check the output printed by the ``init_cuda`` operator at the start of the run:
+
+   .. code-block:: text
+
+      =========== vgpu ================
+      vgpu disabled
+      =================================
+
 .. option:: --mpimt <bool> (default: true)
 
    Enable MPI multi-threading support.
@@ -287,7 +398,7 @@ General options
 
 .. option:: --omp_num_threads <int> (default: -1)
 
-   Number of OpenMP threads to use. A negative value lets OpenMP decide.
+   Number of OpenMP threads to use. A negative value lets OpenMP decide, which by default means using all available threads — this can sometimes be counter-productive.
 
 .. option:: --omp_max_nesting <int> (default: -1)
 

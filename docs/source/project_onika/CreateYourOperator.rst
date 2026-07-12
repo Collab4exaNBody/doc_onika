@@ -6,9 +6,9 @@ This page explains the basic steps to create a new operator in Onika.
 A minimal operator is made of four steps:
 
 - :ref:`inherit-from-operatornode`
-- :ref:`mark-the-operator-as-a-sink`
 - :ref:`add-slots-with-add-slot`
 - :ref:`register-the-operator`
+- :ref:`mark-the-operator-as-a-sink`
 
 .. _inherit-from-operatornode:
 
@@ -39,24 +39,6 @@ The ``documentation()`` method is also recommended, because it provides a human-
    };
 
 The ``execute()`` method is the core of the operator. It is called when the node is executed in the simulation graph.
-
-.. _mark-the-operator-as-a-sink:
-
-Mark the operator as a sink when needed
----------------------------------------
-
-If your operator has a side effect, such as writing a file, updating a rendering context, or terminating a workflow, you can override ``is_sink()`` and return ``true``.
-
-.. code-block:: cpp
-
-   inline bool is_sink() const override final
-   {
-     return true;
-   }
-
-This tells Onika that the operator is terminal-like from the graph point of view. In practice, it is useful for operators that should not be removed just because they have no downstream output connection.
-
-If you do not override this method, the default behavior is to behave like a regular batch operator.
 
 .. _add-slots-with-add-slot:
 
@@ -163,3 +145,25 @@ The string passed to ``register_factory()`` is the name used to reference the op
        value: 1.0
 
 This is the final step that makes your operator available to the execution engine.
+
+.. _mark-the-operator-as-a-sink:
+
+Mark the operator as a sink when needed
+----------------------------------------
+
+``is_sink()`` is not about side effects. Overriding it and returning ``true`` simply forces the operator to be a sink in the DAG, i.e. a node with no downstream connection that Onika should keep instead of pruning.
+
+.. code-block:: cpp
+
+   inline bool is_sink() const override final
+   {
+     return true;
+   }
+
+This tells Onika that the operator is terminal-like from the graph point of view. In practice, it is useful for operators that should not be removed just because they have no downstream output connection.
+
+.. warning::
+
+   Forcing an operator to ``is_sink`` is not common practice. An operator marked as ``is_sink`` should not have any ``OUTPUT`` slot.
+
+If you do not override this method, the default behavior is to behave like a regular batch operator.
