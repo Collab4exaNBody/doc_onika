@@ -19,7 +19,7 @@ Key Characteristics
 Onika in other codes
 --------------------
 
-Onika is used in production by several codes:
+Onika is used by several codes:
 
 * `ExaNBody <https://github.com/Collab4exaNBody/exaNBody>`_, for N-Body simulations (open source) :cite:`Carrard_2024`.
 * `ExaStamp <https://github.com/Collab4exaNBody/exaStamp>`_, for Molecular Dynamics simulations (open source) :cite:`cieren2014exastamp`.
