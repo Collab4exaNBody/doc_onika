@@ -46,3 +46,29 @@ button.copybtn {
 .admonition.warning .admonition-title {
     margin-left: 80px !important; /* Adjust to avoid overlap with the logo */
 }
+
+/* Branch switcher (sidebar) and preview banner, see _static/js/branch-switcher.js */
+.branch-switcher {
+    margin: 8px 12px 0 12px;
+    text-align: left;
+}
+.branch-switcher label {
+    display: block;
+    font-size: 85%;
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 2px;
+}
+.branch-switcher select {
+    width: 100%;
+    padding: 2px 4px;
+    border-radius: 4px;
+    font-size: 90%;
+}
+.branch-banner {
+    background: #e7f2fa;
+    border-left: 6px solid #2980b9;
+    color: #1a3d5c;
+    padding: 10px 16px;
+    margin: 0 0 1em 0;
+    font-weight: 600;
+}

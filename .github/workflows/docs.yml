@@ -1,0 +1,92 @@
+name: Documentation
+
+# Multi-branch documentation site on GitHub Pages.
+#
+# - Every push / pull request builds the docs of that ref with warnings as
+#   errors (check job).
+# - The site itself is always built and deployed from `main`: it contains one
+#   build per branch listed in docs/branches.json (on main), plus a branch
+#   switcher in the sidebar. See docs/build_site.py.
+# - A push to another listed branch (e.g. new-doc) triggers a redeploy from
+#   main, so the preview is refreshed without the github-pages environment
+#   having to accept deployments from non-default branches.
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    if: github.event_name != 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Build docs (warnings as errors)
+        run: |
+          pip install -r docs/source/requirements.txt
+          sphinx-build -W --keep-going -b html docs/source _build/html
+
+  trigger-redeploy:
+    # A listed branch other than main changed: ask main to rebuild the site.
+    needs: check
+    if: github.event_name == 'push' && github.ref != 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Redeploy if branch is published
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BRANCH: ${{ github.ref_name }}
+        run: |
+          if [ -f docs/branches.json ] && jq -e --arg b "$BRANCH" 'any(.[]; .branch == $b)' docs/branches.json > /dev/null; then
+            gh workflow run docs.yml --ref main
+            echo "Branch $BRANCH is published: redeploy requested."
+          else
+            echo "Branch $BRANCH is not listed in docs/branches.json on main: nothing to deploy."
+          fi
+
+  deploy:
+    needs: check
+    # check is skipped for workflow_dispatch: deploy anyway in that case.
+    if: >-
+      always() &&
+      github.ref == 'refs/heads/main' &&
+      github.event_name != 'pull_request' &&
+      (needs.check.result == 'success' || needs.check.result == 'skipped')
+    runs-on: ubuntu-latest
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Build every published branch
+        run: python3 docs/build_site.py --out site --remote origin
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+      - id: deployment
+        uses: actions/deploy-pages@v4

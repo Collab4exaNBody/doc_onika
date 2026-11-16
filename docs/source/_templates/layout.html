@@ -1,0 +1,16 @@
+{% extends "!layout.html" %}
+
+{#
+  Branch switcher.
+  The published site holds one build per git branch (site/<branch>/) plus a
+  site/branches.json describing them. The placeholder below is filled by
+  _static/js/branch-switcher.js; it stays hidden for local builds where no
+  branches.json exists.
+#}
+{%- block sidebartitle %}
+  {{ super() }}
+  <div id="branch-switcher" class="branch-switcher" hidden>
+    <label for="branch-switcher-select">Documentation branch</label>
+    <select id="branch-switcher-select"></select>
+  </div>
+{%- endblock %}

@@ -64,7 +64,6 @@ html_theme = 'sphinx_rtd_theme'
 html_logo = "_static/onika_logo.png"
 html_theme_options = {
     'logo_only': False,
-    'display_version': True,
     }
 version = "version 0.0.0"
 
@@ -76,3 +75,4 @@ html_static_path = ['_static']
 
 def setup(app):
    app.add_css_file('css/custom.css')
+   app.add_js_file('js/branch-switcher.js')
