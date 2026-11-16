@@ -1,5 +1,9 @@
-Motivation
-==========
+.. _motivation:
+
+Why components?
+===============
+
+|core| |opdev|
 
 Onika is built around **component-based programming**: software is decomposed into independent building blocks (components), assembled through a formalism external to the programming language itself. This section explains why this architectural choice matters, both from a software engineering and an HPC perspective.
 
@@ -66,6 +70,6 @@ Parallelism, in essence, comes down to knowing which data goes in and out of a c
 Onika: an environment to build your dependencies explicitly
 --------------------------------------------------------------
 
-Onika implements this component-based model directly. An operator (see :doc:`CreateYourOperator`) only exposes its interface through ``ADD_SLOT``-declared ``INPUT``, ``OUTPUT`` and ``INPUT_OUTPUT`` slots, and knows nothing about the operators it is connected to — the same application-structure obliviousness described above, enforced here at the language level. Operators are assembled into a simulation graph from a YAML configuration, a formalism external to C++, so dependencies between operators can never be hard-coded in the source code itself.
+Onika implements this component-based model directly. An operator (see :ref:`operator-anatomy`) only exposes its interface through ``ADD_SLOT``-declared ``INPUT``, ``OUTPUT`` and ``INPUT_OUTPUT`` slots, and knows nothing about the operators it is connected to — the same application-structure obliviousness described above, enforced here at the language level. Operators are assembled into a simulation graph from a YAML input file (see :ref:`msp-language`), a formalism external to C++, so dependencies between operators can never be hard-coded in the source code itself.
 
 Because a whole subgraph is itself just another assembly of components with explicit inputs and outputs, entire portions of a simulation graph can be reused as-is or copied into another configuration, without having to touch the C++ code behind them. The same explicitness also makes it possible to couple several Onika-based codes together: coupling is expressed by adding dedicated coupling operators to the graph, which connect the input/output slots of one code to those of another, rather than by entangling their internal implementations.

@@ -1,31 +1,26 @@
-# Configuration file for the Sphinx documentation builder.
-#
-# This file only contains a selection of the most common options. For a full
-# list see the documentation:
+# Sphinx configuration for the Onika documentation.
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
-
-# -- Path setup --------------------------------------------------------------
-
-# If extensions (or modules to document with autodoc) are in another directory,
-# add these directories to sys.path here. If the directory is relative to the
-# documentation root, use os.path.abspath to make it absolute, like shown here.
-#
-# import os
-# import sys
-# sys.path.insert(0, os.path.abspath('.'))
 
 # -- Project information -----------------------------------------------------
 
-project = 'ONIKA'
-copyright = '2023-2024, Thierry Carrard, Raphaël Prat, Jean-Philippe Perlat, Paul Lafourcade'
+project = 'Onika'
+copyright = '2023-2026, Thierry Carrard, Raphaël Prat, Jean-Philippe Perlat, Paul Lafourcade'
 author = 'Thierry Carrard, Raphaël Prat, Jean-Philippe Perlat, Paul Lafourcade'
+
+# Onika version documented here (keep in sync with project() in onika/CMakeLists.txt)
+release = '1.0.4'
+version = '1.0'
 
 # -- General configuration ---------------------------------------------------
 
-# Add any Sphinx extension module names here, as strings. They can be
-# extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
-# ones.
-extensions = ['sphinx_rtd_theme', 'sphinxcontrib.bibtex','myst_parser','sphinx_tabs.tabs', 'sphinx.ext.mathjax', 'sphinx_copybutton']
+extensions = [
+    'sphinx.ext.mathjax',
+    'sphinxcontrib.bibtex',
+    'sphinxcontrib.mermaid',
+    'sphinx_tabs.tabs',
+    'sphinx_copybutton',
+    'sphinx_design',
+]
 
 mathjax3_config = {
     "tex": {
@@ -35,44 +30,40 @@ mathjax3_config = {
     }
 }
 
-bibtex_bibfiles= ["project_onika/bibliography.bib"]
-
+bibtex_bibfiles = ["bibliography.bib"]
 bibtex_default_style = "plain"
 
-source_suffix = {
-    '.rst': 'restructuredtext',
-    '.txt': 'markdown',
-    '.md': 'markdown',
-}
-
-# Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
-
-# List of patterns, relative to source directory, that match files and
-# directories to ignore when looking for source files.
-# This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = ['requirements.txt', '*~']
 
+# Do not copy shell prompts with the copy button
+copybutton_prompt_text = r"\$ "
+copybutton_prompt_is_regexp = True
+
+# Operator graphs are drawn client-side with Mermaid (no Graphviz binary needed)
+mermaid_version = "11.4.1"
+
+# Reader paths, shown as badges at the top of each page.
+# Use them as |user|, |opdev| and |core| in any page.
+rst_prolog = """
+.. |user| replace:: :bdg-info:`Simulation user`
+.. |opdev| replace:: :bdg-success:`Operator developer`
+.. |core| replace:: :bdg-warning:`Framework developer`
+"""
 
 # -- Options for HTML output -------------------------------------------------
 
-# The theme to use for HTML and HTML Help pages.  See the documentation for
-# a list of builtin themes.
-#
 html_theme = 'sphinx_rtd_theme'
-#html_theme = 'renku'
+html_title = f'Onika {release}'
 html_logo = "_static/onika_logo.png"
 html_theme_options = {
     'logo_only': False,
-    }
-version = "version 0.0.0"
-
-# Add any paths that contain custom static files (such as style sheets) here,
-# relative to this directory. They are copied after the builtin static files,
-# so a file named "default.css" will overwrite the builtin "default.css".
+    'navigation_depth': 3,
+    'collapse_navigation': False,
+}
 html_static_path = ['_static']
-#html_css_files = ['css/custom.css']
+
 
 def setup(app):
-   app.add_css_file('css/custom.css')
-   app.add_js_file('js/branch-switcher.js')
+    app.add_css_file('css/custom.css')
+    app.add_js_file('js/branch-switcher.js')

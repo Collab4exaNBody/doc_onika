@@ -1,11 +1,18 @@
-Command-line Options
-=====================
+.. _command-line:
 
-Onika executables (e.g. ``onikarun``) accept a common set of command-line options. The full list of available options, along with their default values, can be printed with:
+Command-line options
+====================
+
+|user| |opdev|
+
+``onika-exec`` (and its wrapper ``onikarun``) accept a common set of options.
+Each option is an item of the ``configuration`` block of the input file,
+written as a path joined with ``-`` (see :ref:`input-configuration`).
+The full list, with default values, is printed by:
 
 .. code-block:: bash
 
-   ./onikarun --help command-line
+   $ onikarun --help command-line
 
 which produces an output similar to:
 
@@ -29,11 +36,13 @@ which produces an output similar to:
    --logging-parallel <bool> (default: false)
    ...
 
-To actually run a simulation with one or more of these options, pass an input file followed by the desired options:
+To run a simulation with some options, pass the input file first, then the options:
 
 .. code-block:: bash
 
-   ./onikarun file.msp --option-XXX
+   $ onikarun file.msp --option-XXX value
+
+A boolean option without a value means ``true``.
 
 Among all these options, a few are especially useful on a daily basis:
 
@@ -42,6 +51,7 @@ Among all these options, a few are especially useful on a daily basis:
 - ``--profiling-summary``: prints a timetable at the end of the run. This is extremely useful for performance studies.
 - ``--nogpu``: disables GPU execution. This is also handy while debugging, to rule out GPU-related issues.
 - ``--omp_num_threads``: sets the number of OpenMP threads used to run the simulation. Otherwise, Onika uses all available threads, which can sometimes be counter-productive.
+- ``--set-<path> <value>``: overrides any value of the input file, e.g. ``--set-global-nsteps 100`` (see :ref:`msp-command-line`).
 
 Options are grouped by prefix, each corresponding to a functional area of the framework, as described below.
 
@@ -151,47 +161,54 @@ Profiling options
    Restrict GPU profiling to operators whose name matches one of the given filters.
 
 Profiling trace options
---------------------------
+-----------------------
 
 Control the generation of detailed execution traces (e.g. for visualization in external tools).
+These items are nested in ``profiling``, so the options start with ``--profiling-trace-``.
 
-.. option:: --profilingtrace-enable <bool> (default: false)
+.. warning::
+
+   In Onika 1.0.4, ``--help command-line`` prints these options as
+   ``--profilingtrace-...`` (without the second ``-``). That spelling is
+   **silently ignored**. Use ``--profiling-trace-...`` as written below.
+
+.. option:: --profiling-trace-enable <bool> (default: false)
 
    Enable generation of an execution trace.
 
-.. option:: --profilingtrace-format <std::string> (default: "yaml")
+.. option:: --profiling-trace-format <std::string> (default: "yaml")
 
-   Output format of the generated trace file.
+   Output format of the generated trace file (e.g. ``vite`` or ``dot``).
 
-.. option:: --profilingtrace-file <std::string> (default: "trace")
+.. option:: --profiling-trace-file <std::string> (default: "trace")
 
    Base name of the generated trace file.
 
-.. option:: --profilingtrace-color <std::string> (default: "operator")
+.. option:: --profiling-trace-color <std::string> (default: "operator")
 
-   Criterion used to color trace entries (e.g. by operator).
+   Criterion used to color trace entries: ``operator``, ``duration`` or ``tag``.
 
-.. option:: --profilingtrace-total <bool> (default: false)
+.. option:: --profiling-trace-total <bool> (default: false)
 
    Include cumulative totals in the generated trace.
 
-.. option:: --profilingtrace-idle <bool> (default: true)
+.. option:: --profiling-trace-idle <bool> (default: true)
 
    Include idle time periods in the generated trace.
 
-.. option:: --profilingtrace-trigger <std::string> (default: "")
+.. option:: --profiling-trace-trigger <std::string> (default: "")
 
    Name of the event used to trigger trace recording.
 
-.. option:: --profilingtrace-trigger_interval <IntVector> (default: {})
+.. option:: --profiling-trace-trigger_interval <IntVector> (default: {})
 
    Interval, in trigger occurrences, defining when trace recording starts and stops.
 
-.. option:: --profilingtrace-idle_resolution <long> (default: 8192)
+.. option:: --profiling-trace-idle_resolution <long> (default: 8192)
 
    Time resolution, in internal clock ticks, used to detect idle periods.
 
-.. option:: --profilingtrace-idle_smoothing <long> (default: 32)
+.. option:: --profiling-trace-idle_smoothing <long> (default: 32)
 
    Smoothing window, in samples, applied to idle time detection.
 
@@ -321,6 +338,11 @@ Development and troubleshooting options.
 
    Print the operator execution graph as it is executed.
 
+.. option:: --debug-strict_slots <bool> (default: false)
+
+   Make unknown keys in an operator definition fatal errors instead of warnings.
+   Useful to catch typos in slot names.
+
 Onika runtime options
 -------------------------
 
@@ -436,6 +458,8 @@ General options
 
    Run the built-in unit tests and exit.
 
-.. option:: --set <YAML::Node> (default: )
+.. option:: --set-<path> <value>
 
-   Override a configuration value from the command line, using YAML syntax.
+   Override any value of the input file, e.g. ``--set-global-nsteps 100``.
+   The path is the sequence of YAML keys joined with ``-``.
+   See :ref:`msp-command-line`.
