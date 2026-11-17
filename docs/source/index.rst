@@ -20,8 +20,8 @@ files), make your own *stitches* (operators), work *on the needles*
    flowchart LR
      msp["input file<br/>(.msp, YAML)"] --> factory["operator factory"]
      plugins["plugins<br/>(your operators)"] --> factory
-     factory --> graph["simulation graph"]
-     graph --> run["parallel execution<br/>MPI · OpenMP · GPU"]
+     factory --> simgraph["simulation graph"]
+     simgraph --> run["parallel execution<br/>MPI · OpenMP · GPU"]
 
 Choose your path
 ================
