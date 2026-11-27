@@ -20,6 +20,8 @@ permissions:
 jobs:
   check:
     runs-on: ubuntu-latest
+    outputs:
+      publish: ${{ steps.publish.outputs.publish }}
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-python@v5
@@ -27,12 +29,19 @@ jobs:
           python-version: 3.x
       - run: pip install zensical
       - run: zensical build --strict --clean
+      # The env context is not available in a job-level `if`, so whether this
+      # ref is a published branch is computed here and passed to deploy.
+      - id: publish
+        run: |
+          publish=false
+          if [ "$GITHUB_EVENT_NAME" != pull_request ]; then
+            for b in $DOC_BRANCHES; do [ "$b" = "$GITHUB_REF_NAME" ] && publish=true; done
+          fi
+          echo "publish=$publish" >> "$GITHUB_OUTPUT"
 
   deploy:
     needs: check
-    if: >-
-      github.event_name != 'pull_request' &&
-      contains(format(' {0} ', env.DOC_BRANCHES), format(' {0} ', github.ref_name))
+    if: needs.check.outputs.publish == 'true'
     runs-on: ubuntu-latest
     concurrency:
       group: pages
