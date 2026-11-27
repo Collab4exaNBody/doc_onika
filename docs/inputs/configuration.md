@@ -8,9 +8,27 @@ profiling, debugging, threads, GPU, plugins. It does not change the physics.
 Every item has two equivalent forms: a YAML key in the input file, or a
 command-line option. The option name is the YAML path joined with `-`:
 
-| In the input file | On the command line |
-|---|---|
-| .. code-block:: yaml configuration: omp_num_threads: 8 profiling: summary: true trace: enable: true debug: graph: true | .. code-block:: bash --omp_num_threads 8 --profiling-summary true --profiling-trace-enable true --debug-graph true |
+<div class="grid" markdown>
+
+``` yaml title="In the input file"
+configuration:
+  omp_num_threads: 8
+  profiling:
+    summary: true
+    trace:
+      enable: true
+  debug:
+    graph: true
+```
+
+``` bash title="On the command line"
+--omp_num_threads 8
+--profiling-summary true
+--profiling-trace-enable true
+--debug-graph true
+```
+
+</div>
 
 A boolean option given without a value is set to `true`: `--debug-graph`
 is the same as `--debug-graph true`.

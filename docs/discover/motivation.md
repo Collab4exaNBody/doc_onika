@@ -53,10 +53,36 @@ As explained above, the way a software project is decomposed, and the dependenci
 
 Beyond the software construction process itself, component-based programming is, and remains, a major asset for HPC, because it makes the data flow between functional units explicit and clearly identifiable, as illustrated below.
 
-<figure markdown="span">
-  ![Data flow between components: inputs and outputs of each functional unit are made explicit.](../img/exemples_composants.png)
-  <figcaption>Data flow between components: inputs and outputs of each functional unit are made explicit.</figcaption>
-</figure>
+``` mermaid
+flowchart LR
+  filename([filename]) --> data_reader
+  data_reader[data_reader] --> particles[Particle data]
+
+  particles --> reset_force[reset_force]
+  reset_force -. particles .-> gravity_force[gravity_force]
+  gravity_force -. particles .-> hook_force[hook_force]
+  hook_force -. particles .-> wall[wall]
+
+  gravity([Gravity strength]) --> gravity_force
+  hook([Hook parameters]) --> hook_force
+  wallpos([Wall position]) --> wall
+
+  particles --> build_neighbors[Build neighbors]
+  cutoff([cutoff radius]) --> build_neighbors
+  build_neighbors --> neighbors[Neighbor lists]
+  neighbors --> hook_force
+
+  classDef component fill:#ffff80,stroke:#9a9a30,color:#000,font-weight:bold
+  classDef data fill:#9ed69a,stroke:#4a8a3a,color:#000
+  classDef input fill:#9ed69a,stroke:#4a8a3a,color:#000
+  class data_reader,reset_force,gravity_force,hook_force,wall,build_neighbors component
+  class particles,neighbors data
+  class filename,gravity,hook,wallpos,cutoff input
+```
+
+<p style="text-align:center"><em>Data flow between components: inputs and outputs of each functional unit are made explicit.
+Yellow boxes are components, green boxes are data produced by a previous component, rounded nodes are values from the user input (YAML file).
+Dotted arrows show data modified in place.</em></p>
 
 Parallelism, in essence, comes down to knowing which data goes in and out of a computational kernel, and which data flows can be processed independently from which others. In a classical programming model, data flows come in many different forms — function parameters, calls to third-party functions, side effects, global variables, and so on — and keeping them under control is left to the expertise of one or several seasoned developers. By making inputs and outputs explicit at the level of each component, Onika's component-based model removes much of that ambiguity, and makes the resulting dataflow graph a first-class, analyzable artifact rather than something a developer has to reconstruct by hand.
 
