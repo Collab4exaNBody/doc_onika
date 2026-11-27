@@ -43,7 +43,7 @@ The returned `ApplicationContext` gives access to the graph:
 |---|---|
 | `get_error_code()` | `-1` if the graph is ready to run. A value `>= 0` means `init` stopped early (`--help`, unit tests, ...): return it as the exit code. |
 | `node("path")` | The operator with this path name, or `nullptr`. |
-| `set_multiple_run(true)` | Allows several calls to `run()` (see [Running several times](#embedding-multiple-run)). |
+| `set_multiple_run(true)` | Allows several calls to `run()` on the same graph (see [Running several times](#embedding-multiple-run)). |
 | `m_configuration` | The parsed [`configuration` block](../inputs/configuration.md) (`ApplicationConfiguration`). |
 | `m_mpi_rank`, `m_mpi_nprocs`, `m_ngpus`, `m_cpucount` | Resources found at initialization. |
 | `m_simulation_graph` | Root of the graph (`std::shared_ptr<OperatorNode>`). |
@@ -217,6 +217,12 @@ timestep after run = 3
 
 ## Running several times { #embedding-multiple-run }
 
+There are two different needs: running **the same graph** several times
+(one `init()`), and running **several simulations** one after the other in
+one process (several `init()` / `end()`).
+
+### The same graph, several `run()` calls
+
 By default, after an operator runs outside of a loop, Onika *finalizes* it:
 the resources of its private slots are released, since the run is over.
 Call `set_multiple_run(true)` before the first `run()` whenever you will call
@@ -226,7 +232,57 @@ The state of the graph is **kept between runs**: slot values are not reset.
 Running a whole graph a second time therefore continues from where it
 stopped; in `print_loop.msp`, `compute_loop_continue` is already false and
 the loop body does not run again. To drive a simulation step by step, run
-**a part of the graph** instead, as below.
+**a part of the graph** instead, as in [the coupling loop below](#embedding-coupling).
+
+### Several simulations in one process { #embedding-several-simulations }
+
+Each `init()` reads the input files and builds a new graph, so a
+fresh simulation (new parameters, new input file) needs a new
+`init()` / `run()` / `end()` cycle. By default, `end()` calls
+`MPI_Finalize()` when Onika initialized MPI, and MPI cannot be initialized
+again in the same process: the second `init()` stops with
+
+``` text
+MPI has already been finalized, it cannot be initialized again
+```
+
+Call `onika::app::set_deferred_mpi_finalize(true)` **before the first
+`init()`**. `end()` then leaves MPI running, and `MPI_Finalize()` is called
+once, when the process exits:
+
+``` cpp
+#include <onika/app/api.h>
+#include <iostream>
+#include <string>
+#include <vector>
+
+int main(int argc, char* argv[])
+{
+  onika::app::set_deferred_mpi_finalize( true );   // before the first init()
+
+  for(long nsteps : { 1L , 3L })
+  {
+    std::vector<std::string> args = { argv[0], "step3.msp", "--set-global-nsteps", std::to_string(nsteps) };
+    auto app = onika::app::init( args );
+    if( app->get_error_code() >= 0 ) return app->get_error_code();
+    onika::app::run( app );
+    std::cout << "cycle nsteps=" << nsteps << " : timestep = "
+              << *app->node("simulation.compute_loop")->out_slot("timestep")->output_value_pointer<long>() << std::endl;
+    onika::app::end( app );
+  }
+  return 0;
+}
+```
+
+``` text
+cycle nsteps=1 : timestep = 2
+cycle nsteps=3 : timestep = 4
+```
+
+This also works under `mpirun`. It is what [`pyonika`](../python/pyonika.md#several-simulations-in-one-process)
+does when it is imported. A host application that initializes MPI itself
+(see [MPI in a host application](#embedding-mpi)) does not need it: Onika
+never finalizes an MPI it did not start.
 
 ## Code coupling: a step-wise loop { #embedding-coupling }
 
