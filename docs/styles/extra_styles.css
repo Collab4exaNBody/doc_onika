@@ -1,0 +1,40 @@
+/* Reader-path badges shown under each page title (Simulation user, ...). */
+.md-typeset .badge {
+  display: inline-block;
+  padding: .1em .6em;
+  margin: 0 .2em .2em 0;
+  border-radius: 1em;
+  font-size: .7rem;
+  font-weight: 600;
+  color: #fff;
+  vertical-align: middle;
+}
+.md-typeset .badge-user  { background-color: #0288d1; }
+.md-typeset .badge-opdev { background-color: #2e7d32; }
+.md-typeset .badge-core  { background-color: #ef6c00; }
+
+/* Smaller font for long text/YAML outputs, as in the exaStamp docs. */
+.highlight .language-yaml,
+.highlight[class*="yaml"] pre,
+.highlight[class*="text"] pre {
+  font-size: .8em;
+}
+
+/* Command-line and glossary entries rendered as definition lists. */
+.md-typeset dl dt code {
+  font-weight: 600;
+}
+
+.md-typeset h1 code,
+.md-typeset h2 code,
+.md-typeset h3 code,
+.md-typeset h4 code {
+  background-color: var(--md-accent-fg-color--transparent);
+  color: var(--md-accent-fg-color);
+}
+
+/* Figures: keep images readable in dark mode. */
+[data-md-color-scheme="slate"] .md-typeset figure img {
+  background-color: #fff;
+  border-radius: .2rem;
+}

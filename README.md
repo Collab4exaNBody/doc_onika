@@ -3,27 +3,28 @@
 Sources of the documentation of [Onika](https://github.com/Collab4exaNBody/onika),
 published at https://collab4exanbody.github.io/doc_onika/.
 
+The documentation is written in Markdown (`docs/`) and built with
+[Zensical](https://zensical.org/), configured in `zensical.toml`.
+
 ## Build locally
 
 ```bash
 python3 -m venv .venv && source .venv/bin/activate
-pip install -r docs/source/requirements.txt
-sphinx-build -W --keep-going -b html docs/source docs/build
+pip install zensical
+zensical serve            # live preview on http://localhost:8000
+zensical build --strict   # static site in site/
 ```
 
-Then open `docs/build/index.html`.
+## Published versions
 
-## Several branches online
+Only `main` is published for now (`DOC_BRANCHES` in
+`.github/workflows/docs.yml`). More branches can be added there to publish
+previews side by side, with a version selector in the header. See
+`docs/project/contributing-docs.md`.
 
-The site publishes every branch listed in `docs/branches.json` (on `main`),
-each under `/<branch>/`, with a branch selector in the sidebar. This is used to
-preview a documentation branch for review while keeping the current one.
-See `docs/source/project/contributing-docs.rst` for details.
-
-Build the whole multi-branch site locally:
+Build the published site locally:
 
 ```bash
-git fetch origin
-python3 docs/build_site.py --out site
-python3 -m http.server -d site 8000
+bash scripts/build_versions.sh public main
+python3 -m http.server -d public 8000
 ```
