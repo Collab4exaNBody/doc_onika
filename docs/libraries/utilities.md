@@ -50,7 +50,7 @@ buffer, usable without allocation), `function_name_and_args("f(a,b)", name, args
 
 | Function | Meaning |
 |---|---|
-| `data_file_path(path)` | Finds a data file: a relative `path` is searched in the directories of `ONIKA_DATA_PATH` (`.:./data:<install>/share/data` by default), the first match is returned. Use it for every input data file read by an operator. |
+| `data_file_path(path)` | Finds a data file: a relative `path` is searched in the directories of `ONIKA_DATA_PATH` (`.:./data:<install>/share/data` by default), the first match is returned; if none is found, a warning lists the directories searched. Use it for every input data file read by an operator. |
 | `config_file_path(path)` | Same for input files (`.msp`), in `ONIKA_CONFIG_PATH`. Used by `includes`. |
 | `set_data_file_dirs("dir1:dir2")` | Changes the data search path. |
 | `dirname`, `is_relative_path`, `concat_dir_path`, `resolve_file_path` | Path helpers. |

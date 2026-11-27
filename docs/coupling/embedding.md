@@ -65,6 +65,11 @@ int main(int argc, char* argv[])
 }
 ```
 
+!!! tip "From Python"
+
+    The same API is available in Python, with `pyonika.init()`, `run()`,
+    `run_node()` and `end()`: see [Python bindings](../python/pyonika.md).
+
 ### Build it with CMake
 
 `find_package(onika)` provides the variables needed to compile and link
@@ -364,3 +369,4 @@ initialization (sub-communicator, OpenMP set by the host, extra YAML input...).
 | `run_simulation_graph(node, profiling)` | Runs a node. |
 | `node_from_path(graph, path)` | Finds a node by path name. |
 | `finalize(config, graph, trace, external_mpi_init)` | Profiling output, resource release, `MPI_Finalize()`. |
+| `set_deferred_mpi_finalize(true)` | Call before the first `init()`: `end()` no longer calls `MPI_Finalize()`, which is done once at process exit, so several `init()`/`end()` cycles can run in one process (used by `pyonika`). |

@@ -48,10 +48,14 @@ In a list, each item calls an operator in one of two forms:
 
 The map sets the values of the operator's slots. Use `onika-exec --help <operator>` to list the slots of an operator.
 
-!!! warning
+A key that matches no slot gives a warning listing the valid ones, and is
+ignored:
 
-    A key that matches no slot is silently ignored. Check the spelling of slot
-    names against `--help <operator>` or `--debug-graph`.
+``` text
+ERR: Warning: operator 'print_int' has no parameter 'prefx'. Valid parameters are: prefix suffix value (unknown keys are ignored)
+```
+
+With `--debug-strict_slots true`, it is a fatal error instead.
 
 !!! tip
 
@@ -185,7 +189,7 @@ includes:
 
 Files are loaded in this order, each one merged on top of the previous ones:
 
-1. `main-config.msp`, always first (see [The default file: `main-config.msp`](#msp-main-config));
+1. `main-config.msp`, always first, even with `includes: []` (see [The default file: `main-config.msp`](#msp-main-config));
 2. the files in `includes`, recursively, each file only once;
 3. your input file;
 4. command-line options (see [Overriding values from the command line](#msp-command-line)).
@@ -247,12 +251,6 @@ path being the YAML keys separated by `-`:
 ``` bash
 $ onika-exec input.msp --set-global-nsteps 100 --set-global-dt "0.5 fs"
 ```
-
-!!! warning
-
-    In Onika 1.1.0, the `onikarun` wrapper splits arguments that contain
-    spaces, so `--set-global-dt "0.5 fs"` fails with a YAML parse error.
-    For such values, source `setup-env.sh` and call `onika-exec` directly.
 
 The same override can be written in the input file, under `configuration`:
 

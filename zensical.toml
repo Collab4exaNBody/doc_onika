@@ -37,6 +37,9 @@ nav = [
     {"Embed & couple" = [
         "coupling/embedding.md",
     ]},
+    {"Python" = [
+        "python/pyonika.md",
+    ]},
     {"Libraries" = [
         "libraries/memory.md",
         "libraries/math.md",

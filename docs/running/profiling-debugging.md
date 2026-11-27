@@ -11,7 +11,7 @@ All options are described in [Command-line options](command-line.md).
 |---|---|
 | Was it removed from the graph? | Look for `*SUPPRESS* <path>` in the log: its outputs are never used. See [Unused operators are removed](../inputs/msp-language.md#msp-pruning). |
 | Is it in the graph, with the expected slots? | `--debug-graph`. Add `--debug-graph_lod 2` for more detail. |
-| Is a slot name misspelled in the input file? | Unknown keys are silently ignored: compare with the slots listed by `--debug-graph` or `onika-exec --help <operator>`. |
+| Is a slot name misspelled in the input file? | Look for `Warning: operator '...' has no parameter '...'` in the log; `--debug-strict_slots true` makes it an error. |
 | Which files were loaded, and the final YAML? | `--debug-files` and `--debug-yaml`. |
 | Which runtime settings are used? | `--debug-config`. |
 | Which operator ran last before a crash? | `--profiling-exectime` prints each operator when it finishes. |
@@ -72,15 +72,19 @@ $ trace_convert -vite trace.yml out
 # writes out.vite (for the ViTE trace viewer), out.vite.idle, out.vite.plot
 ```
 
-Other output formats: `-dot`, `-plot`, `-tikz`. Useful filters:
-`-start <event> <index>` / `-end <event> <index>` to keep a time window,
-`-threads <first> <last>` to keep some threads.
-
-!!! note
-
-    The usage message of `trace_convert` of Onika 1.1.0 shows formats without the
-    leading `-` (`vite|dot|plot`); the program actually expects `-vite`,
-    `-dot`...
+``` text
+Usage: trace_convert [-vite|-dot|-plot|-tikz|-yaml] [options] <yaml-input-file> <output-file>
+  output format (default: -yaml)
+Options:
+  -notrace                 do not output the trace itself
+  -noidle                  do not output the idle ratio plot
+  -color ctx|tag           state coloring scheme
+  -start <state> <index>   start at the index-th occurrence of state (negative index counts from the end)
+  -end <state> <index>     end at the index-th occurrence of state (negative index counts from the end)
+  -shift                   shift times so that the trace starts at zero
+  -pad <state>             fill each thread with given state up to the end of the trace
+  -threads <first> <end>   keep threads in [first;end[
+```
 
 ## Threads and GPU
 

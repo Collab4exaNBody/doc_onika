@@ -209,6 +209,9 @@ ERR: *****************************************
 clamp_value: empty range [5,0]
 ```
 
+In Python ([`pyonika`](../python/pyonika.md#errors)), it raises `pyonika.OnikaError` instead of stopping
+the process, when it is safe to do so.
+
 Use it for invalid input that cannot be recovered. The same mechanism is
 used by Onika itself, for example `Slot 'nsteps' in operator ... has no value`.
 

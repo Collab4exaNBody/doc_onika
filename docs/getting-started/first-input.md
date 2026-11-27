@@ -101,8 +101,8 @@ Current timestep = 5
 - `sim_continue` sets its `result` to false once `timestep` goes past
   `end_at`. The rebind maps them to `compute_loop_continue` and `nsteps`.
 
-Apart from `nsteps` and the setup operators, this is the `print_loop.msp` of
-[Your first run](first-run.md). Everything used here is
+Apart from `nsteps` and the setup operators, this is `data/exemples/print_loop.msp`
+([Your first run](first-run.md)). Everything used here is
 described in [The input file language](../inputs/msp-language.md), and the operators in [Built-in operators](../reference/builtin-operators.md).
 
 Next step: [Your first operator](first-operator.md), to add your own operator to this loop.

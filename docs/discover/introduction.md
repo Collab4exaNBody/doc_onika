@@ -41,6 +41,7 @@ See [Why components?](motivation.md) for why Onika is built this way.
 ## Key characteristics
 
 - **Language:** C++20.
+- **Python:** optional `pyonika` bindings to drive simulations from Python (see [Python bindings](../python/pyonika.md)).
 - **Build system:** CMake (≥ 3.26).
 - **Configuration:** YAML input files (`.msp`).
 - **Parallelization:** MPI and OpenMP for distributed and shared-memory parallelism.

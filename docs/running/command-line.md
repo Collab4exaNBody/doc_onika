@@ -150,12 +150,6 @@ Control how Onika reports log, error and debug messages.
 Control the generation of detailed execution traces (e.g. for visualization in external tools).
 These items are nested in `profiling`, so the options start with `--profiling-trace-`.
 
-!!! warning
-
-    In Onika 1.1.0, `--help command-line` prints these options as
-    `--profilingtrace-...` (without the second `-`). That spelling is
-    **silently ignored**. Use `--profiling-trace-...` as written below.
-
 `--profiling-trace-enable <bool>` *(default: false)*
 :   Enable generation of an execution trace.
 
@@ -291,6 +285,10 @@ Development and troubleshooting options.
 
 `--debug-graph_exec <bool>` *(default: false)*
 :   Print the operator execution graph as it is executed.
+
+`--debug-strict_slots <bool>` *(default: false)*
+:   Make unknown keys in an operator definition fatal errors instead of warnings.
+    Useful to catch typos in slot names.
 
 ## Onika runtime options
 

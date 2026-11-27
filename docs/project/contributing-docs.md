@@ -20,7 +20,7 @@ $ zensical build --strict         # static site in site/, warnings are errors
 ## Page conventions
 
 - One section per directory: `discover`, `getting-started`, `inputs`,
-  `operators`, `coupling`, `libraries`, `running`, `reference`, `project`. Each new page must
+  `operators`, `coupling`, `python`, `libraries`, `running`, `reference`, `project`. Each new page must
   also be added to `nav` in `zensical.toml`.
 - Link to other pages with relative paths to the `.md` file, e.g.
   `[operator anatomy](../operators/anatomy.md)`. Give important sections an

@@ -22,7 +22,9 @@ the C++ API (`onika/physics/units.h`). Examples were run against Onika 1.1.0.
 | energy | `J`, `kJ`, `eV`, `cal`, `kcal` |
 
 In input files, units follow the value after a space, combined with `.`, `/`
-and powers `^` (see [Values and units](../inputs/msp-language.md#values-and-units)):
+and powers `^` (see [Values and units](../inputs/msp-language.md#values-and-units)).
+An unknown unit stops the run with the list of valid symbols
+(`unknown unit 'femtos' in 'femtos'. Valid units are: m mm um nm ang ...`):
 
 ``` yaml
 global:

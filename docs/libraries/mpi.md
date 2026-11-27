@@ -108,5 +108,5 @@ input and output may be the same array.
 ## MPI datatypes
 
 `onika::mpi::mpi_datatype<T>()` (`onika/mpi/data_types.h`) returns the
-`MPI_Datatype` of `char`, `short`, `int`, `long` (signed and unsigned), `float` and `double`,
+`MPI_Datatype` of `char`, `signed char`, `short`, `int`, `long`, `long long` (signed and unsigned), `float` and `double`,
 and `mpi_typeof(x)` the one of a variable.

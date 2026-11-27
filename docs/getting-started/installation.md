@@ -11,6 +11,7 @@ To build **Onika**, you need:
 - **MPI** (e.g. OpenMPI or MPICH) and **OpenMP**
 - **yaml-cpp**, version **0.6.3** recommended
 - **CUDA** or **HIP** *(optional)*, for GPU acceleration
+- **Python 3** (tested with 3.10 to 3.13) with development headers and `numpy` *(optional)*, for the [Python bindings](../python/pyonika.md)
 
 !!! note
 
@@ -119,6 +120,26 @@ To build **Onika**, you need:
     spack load onika
     ```
 
+### CPU architecture flags
+
+`ONIKA_ARCH_FLAGS` sets the CPU flags used for Onika **and every code built on
+it** (plugins, exaNBody...). It is empty on x86-64 (no flags added) and
+`-march=armv8-a` on ARM64. Use it to target your CPU, for example
+`-DONIKA_ARCH_FLAGS="-march=x86-64-v3"`, `"-march=native"`, or
+`"-mcpu=neoverse-v2"` / `"-mcpu=native"` on ARM (Graviton, Grace, Apple M).
+
+### macOS
+
+Onika builds on macOS for **CPU** execution (no GPU support), with the
+CMake commands above. Differences with Linux:
+
+- dependencies usually come from Homebrew (yaml-cpp, an MPI library, and an
+  OpenMP runtime for the compiler); Onika finds the yaml-cpp headers outside
+  system directories by itself;
+- plugins keep the `.so` extension, as on Linux;
+- `--debug-fpe` (floating point exception trapping) and `--pinethreads`
+  (thread pinning) are not available: they are ignored with a warning.
+
 All CMake options are listed in [CMake options](../reference/cmake-options.md). To build for AMD GPUs on a machine without one, see [Building for AMD GPUs (HIP) in Docker](docker-hip.md).
 
 ## What gets installed
@@ -134,9 +155,10 @@ All CMake options are listed in [CMake options](../reference/cmake-options.md). 
 ├── cmake/  thirdparty/ CMake helpers and bundled third-party headers
 ├── onika-config.cmake  CMake package, for find_package(onika)
 ├── plugins/            operator plugins (libonikaTools-plugin.so, tutorials, ...)
+├── python/             pyonika package (only with -DONIKA_BUILD_PYTHON=ON)
 └── data/
     ├── config/         default input files (main-config.msp, ...)
-    └── exemples/       example input files (concurrent_block_parallel.msp)
+    └── exemples/       example input files (print_loop.msp, concurrent_block_parallel.msp)
 ```
 
 ## Check your installation

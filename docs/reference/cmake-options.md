@@ -5,7 +5,7 @@
 Main options of Onika's `CMakeLists.txt`, set with `-D<OPTION>=<value>`
 when configuring.
 
-**GPU**
+**GPU and Python**
 
 | Option | Default | Effect |
 |---|---|---|
@@ -13,6 +13,7 @@ when configuring.
 | `ONIKA_ENABLE_HIP` | `OFF` | Uses HIP instead of CUDA. Requires `ONIKA_BUILD_CUDA=ON`. |
 | `CMAKE_CUDA_ARCHITECTURES` |  | Target GPU architectures, e.g. `80` (A100), `90` (H100). |
 | `ONIKA_CU_ENABLE_KERNEL_BOUNDS` | `OFF` | Uses launch bounds to restrict GPU kernels. |
+| `ONIKA_BUILD_PYTHON` | `OFF` | Builds the `pyonika` bindings (see [Python bindings](../python/pyonika.md)). Use with `-DPython3_EXECUTABLE=...`. |
 
 **OpenMP and profiling**
 
@@ -50,6 +51,7 @@ when configuring.
 
 | Variable | Default | Effect |
 |---|---|---|
+| `ONIKA_ARCH_FLAGS` | empty (x86-64), `-march=armv8-a` (ARM64) | CPU architecture flags added to Onika and to every code built on it (see [Installation](../getting-started/installation.md#cpu-architecture-flags)). |
 | `ONIKA_SETUP_ENV_COMMANDS` | empty | Shell commands added at the top of `setup-env.sh` (e.g. `module load ...`), so that `onikarun` sets up the environment. |
 | `ONIKA_HAS_GPU_ATOMIC_MIN_MAX_DOUBLE` | `OFF` | The GPU supports `atomicMin`/`atomicMax` on `double` natively (used by `ONIKA_CU_ATOMIC_MIN/MAX`). |
 | `ONIKA_CUDA_COMPILE_FLAGS`, `ONIKA_HIP_COMPILE_FLAGS` | warnings as errors, `--extended-lambda` | Extra flags for GPU compilation. |

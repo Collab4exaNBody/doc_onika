@@ -2,7 +2,7 @@
 
 <span class="badge badge-user">Simulation user</span>
 
-This page runs a small example, shows its operator graph and
+This page runs an example shipped with Onika, shows its operator graph and
 changes a parameter from the command line. It uses the **counter loop**,
 the running example of this guide: a loop that prints the time step until it
 reaches `nsteps`.
@@ -16,48 +16,48 @@ Onika installs two launchers in `<install-prefix>/bin`:
 - `onikarun`: a wrapper script that sources `setup-env.sh` and then runs
   `onika-exec` with the same arguments.
 
-Save this input file as `print_loop.msp` (you will write it yourself in
-[Your first input file](first-input.md)):
-
-``` yaml title="print_loop.msp"
-print_timestep:
-  rebind: { value: timestep }
-  body: [ print_int: { prefix: "Current timestep = ", suffix: "\n" } ]
-
-compute_loop_stop:
-  rebind:
-    end_at: nsteps
-    result: compute_loop_continue
-  body:
-    - sim_continue
-
-compute_loop:
-  loop: true
-  condition: compute_loop_continue
-  body: [ print_timestep, next_time_step, compute_loop_stop ]
-
-global:
-  dt: 1.0
-  nsteps: 20
-  timestep: 0
-  compute_loop_continue: true
-
-simulation:
-  - global
-  - mpi_comm_world
-  - init_cuda
-  - global
-  - unit_system:
-      verbose: true
-      unit_system: { length: meter , mass: kilogram , time: second , charge: coulomb , temperature: kelvin , amount: mol , luminosity: candela , angle: radian , energy: joule }
-  - compute_loop
-```
-
-Then run it:
+Onika ships this example as `data/exemples/print_loop.msp`:
 
 ``` bash
+$ cp <install-prefix>/data/exemples/print_loop.msp .
 $ <install-prefix>/bin/onikarun print_loop.msp
 ```
+
+??? note "Content of `print_loop.msp` (you will write it yourself in [Your first input file](first-input.md))"
+
+    ``` yaml
+    print_timestep:
+      rebind: { value: timestep }
+      body: [ print_int: { prefix: "Current timestep = ", suffix: "\n" } ]
+
+    compute_loop_stop:
+      rebind:
+        end_at: nsteps
+        result: compute_loop_continue
+      body:
+        - sim_continue
+
+    compute_loop:
+      loop: true
+      condition: compute_loop_continue
+      body: [ print_timestep, next_time_step, compute_loop_stop ]
+
+    global:
+      dt: 1.0
+      nsteps: 20
+      timestep: 0
+      compute_loop_continue: true
+
+    simulation:
+      - global
+      - mpi_comm_world
+      - init_cuda
+      - global
+      - unit_system:
+          verbose: true
+          unit_system: { length: meter , mass: kilogram , time: second , charge: coulomb , temperature: kelvin , amount: mol , luminosity: candela , angle: radian , energy: joule }
+      - compute_loop
+    ```
 
 The output ends with:
 

@@ -51,6 +51,7 @@ flowchart LR
 
     **Path:** [motivation](discover/motivation.md) →
     [embedding and coupling](coupling/embedding.md) →
+    [Python bindings](python/pyonika.md) →
     [libraries](libraries/memory.md) →
     [internals](reference/internals.md)
 
